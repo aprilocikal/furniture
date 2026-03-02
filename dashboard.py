@@ -200,48 +200,111 @@ with tab_crud:
     crud_mode = st.radio("Pilih Operasi Data:", ["Tambah Produk Baru", "Update Data Produk", "Hapus Produk"], horizontal=True)
     st.markdown("---")
     
+    # === SWAL INJECTOR ===
+    if 'swal_show' in st.session_state:
+        swal_msg = st.session_state.pop('swal_show')
+        import streamlit.components.v1 as components
+        components.html(f"""
+            <script>
+            if (!window.parent.Swal) {{
+                let script = window.parent.document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+                window.parent.document.head.appendChild(script);
+                script.onload = () => {{
+                    window.parent.Swal.fire({{
+                        title: '{swal_msg["title"]}',
+                        text: '{swal_msg["text"]}',
+                        icon: '{swal_msg["icon"]}',
+                        confirmButtonColor: '#3085d6'
+                    }});
+                }}
+            }} else {{
+                window.parent.Swal.fire({{
+                    title: '{swal_msg["title"]}',
+                    text: '{swal_msg["text"]}',
+                    icon: '{swal_msg["icon"]}',
+                    confirmButtonColor: '#3085d6'
+                }});
+            }}
+            </script>
+        """, height=0, width=0)
+
     # === OPERASI: CREATE ===
     if crud_mode == "Tambah Produk Baru":
         st.subheader("Tambah Data Baru")
-        with st.form("form_tambah"):
-            col_t1, col_t2 = st.columns(2)
-            with col_t1:
-                t_jenis = st.text_input("Jenis", placeholder="Contoh: Meja, Kursi")
-                t_brand = st.text_input("Brand", placeholder="Contoh: IKEA, Informa")
-                t_ukuran = st.selectbox("Ukuran", ["S", "M", "L", "XL"])
-            with col_t2:
-                t_harga = st.number_input("Harga per item", min_value=0, step=1000)
-                t_terjual = st.number_input("Jumlah Terjual (pcs)", min_value=0, step=1)
-                t_stokawal = st.number_input("Stok Awal Asumsi", value=10, min_value=0, step=1)
+        
+        ex_jenis = sorted(list(df['jenis'].unique())) if not df.empty else []
+        ex_brand = sorted(list(df['brand'].unique())) if not df.empty else []
+        ex_ukuran = sorted(list(df['ukuran'].unique())) if not df.empty else ["S", "M", "L", "XL"]
+        op_tbh = "+ Tambah Baru..."
+        op_def_jenis = "-- Pilih Jenis --"
+        op_def_brand = "-- Pilih Brand --"
+        op_def_ukuran = "-- Pilih Ukuran --"
+        
+        if 'form_reset_key' not in st.session_state:
+            st.session_state['form_reset_key'] = 0
+        r_key = st.session_state['form_reset_key']
+        
+        col_t1, col_t2 = st.columns(2)
+        with col_t1:
+            sel_jenis = st.selectbox("Jenis", [op_def_jenis] + ex_jenis + [op_tbh], key=f't_sel_jenis_{r_key}')
+            if sel_jenis == op_tbh:
+                t_jenis = st.text_input("Ketik Jenis Baru", placeholder="Contoh: Meja Lipat", key=f't_txt_jenis_{r_key}')
+            else:
+                t_jenis = sel_jenis
+                
+            sel_brand = st.selectbox("Brand", [op_def_brand] + ex_brand + [op_tbh], key=f't_sel_brand_{r_key}')
+            if sel_brand == op_tbh:
+                t_brand = st.text_input("Ketik Brand Baru", placeholder="Contoh: IKEA, Informa", key=f't_txt_brand_{r_key}')
+            else:
+                t_brand = sel_brand
+                
+            sel_ukuran = st.selectbox("Ukuran", [op_def_ukuran] + ex_ukuran + [op_tbh], key=f't_sel_ukuran_{r_key}')
+            if sel_ukuran == op_tbh:
+                t_ukuran = st.text_input("Ketik Ukuran Baru", placeholder="Contoh: XXL, Custom", key=f't_txt_ukuran_{r_key}')
+            else:
+                t_ukuran = sel_ukuran
+        
+        with col_t2:
+            t_harga = st.number_input("Harga per item", min_value=0, step=1000, value=None, placeholder="0", key=f't_harga_{r_key}')
+            t_terjual = st.number_input("Jumlah Terjual (pcs)", min_value=0, step=1, value=None, placeholder="0", key=f't_terjual_{r_key}')
+            t_stokawal = st.number_input("Stok Awal Asumsi", min_value=0, step=1, value=None, placeholder="0", key=f't_stokawal_{r_key}')
             
-            submit_add = st.form_submit_button("Simpan Data")
-            if submit_add:
-                if not t_jenis.strip() or not t_brand.strip():
-                    st.error("Jenis dan Brand tidak boleh kosong!")
-                else:
-                    # Logic kalkulasi hpp
-                    hpp = t_harga * 0.6
-                    profit_per_item = t_harga - hpp
-                    total_profit = profit_per_item * t_terjual
-                    tanggal_sekarang = datetime.now().strftime("%Y-%m-%d")
+        st.markdown("<br>", unsafe_allow_html=True)
+        submit_add = st.button("Simpan Data", type="primary", use_container_width=True)
+        if submit_add:
+            if t_jenis == op_def_jenis or t_brand == op_def_brand or t_ukuran == op_def_ukuran:
+                st.error("Mohon pilih Jenis, Brand, dan Ukuran terlebih dahulu dari daftar kategori!")
+            elif t_harga is None or t_terjual is None or t_stokawal is None:
+                st.error("Semua field angka (Harga, Terjual, Stok Awal) harus diisi (Minimal 0)!")
+            elif not t_jenis or not str(t_jenis).strip() or not t_brand or not str(t_brand).strip() or not t_ukuran or not str(t_ukuran).strip():
+                st.error("Semua field teks tidak boleh kosong!")
+            else:
+                hpp = t_harga * 0.6
+                profit_per_item = t_harga - hpp
+                total_profit = profit_per_item * t_terjual
+                
+                new_item = {
+                    "jenis": str(t_jenis).strip(),
+                    "ukuran": str(t_ukuran).strip(),
+                    "harga_per_item": t_harga,
+                    "stok_awal": t_stokawal,
+                    "stok_akhir": t_stokawal - t_terjual,
+                    "jumlah_terjual": t_terjual,
+                    "tanggal_terjual": datetime.now().strftime("%Y-%m-%d"),
+                    "brand": str(t_brand).strip(),
+                    "hpp": hpp,
+                    "profit_per_item": profit_per_item,
+                    "total_profit": total_profit
+                }
+                data_produk.append(new_item)
+                save_data(data_produk)
+                
+                # Reset widget states with new key safely
+                st.session_state['form_reset_key'] += 1
                     
-                    new_item = {
-                        "jenis": t_jenis,
-                        "ukuran": t_ukuran,
-                        "harga_per_item": t_harga,
-                        "stok_awal": t_stokawal,
-                        "stok_akhir": t_stokawal - t_terjual,
-                        "jumlah_terjual": t_terjual,
-                        "tanggal_terjual": tanggal_sekarang,
-                        "brand": t_brand,
-                        "hpp": hpp,
-                        "profit_per_item": profit_per_item,
-                        "total_profit": total_profit
-                    }
-                    data_produk.append(new_item)
-                    save_data(data_produk)
-                    st.success(f"Berhasil! Produk '{t_jenis}' - '{t_brand}' telah ditambahkan.")
-                    st.rerun() # Refresh halaman secara instan
+                st.session_state['swal_show'] = {"title": "Tersimpan!", "text": f"Produk {str(t_jenis).strip()} - {str(t_brand).strip()} berhasil ditambahkan.", "icon": "success"}
+                st.rerun()
 
     # === OPERASI: UPDATE ===
     elif crud_mode == "Update Data Produk":
@@ -250,38 +313,59 @@ with tab_crud:
             st.info("Dataset JSON Anda masih kosong!")
         else:
             options_upd = [f"[{i+1}] [{p['brand']}] Jenis: {p['jenis']} | Ukuran {p['ukuran']} | Terjual: {p['jumlah_terjual']}" for i, p in enumerate(data_produk)]
-            selected_upd = st.selectbox("Pilih produk yang ingin diperbarui:", options_upd)
-            idx = options_upd.index(selected_upd)
-            curr = data_produk[idx] # referensi data lama
+            selected_upd = st.selectbox("Pilih produk yang ingin diperbarui:", options_upd, index=None, placeholder="-- Pilih Data Produk --")
             
-            with st.form("form_update"):
+            if selected_upd:
+                idx = options_upd.index(selected_upd)
+                curr = data_produk[idx] # referensi data lama
+                ex_jenis = sorted(list(df['jenis'].unique())) if not df.empty else []
+                ex_brand = sorted(list(df['brand'].unique())) if not df.empty else []
+                ex_ukuran = sorted(list(df['ukuran'].unique())) if not df.empty else ["S", "M", "L", "XL"]
+                op_tbh = "+ Tambah Baru..."
+                
                 st.markdown("Ubah field informasi di bawah:")
                 col_u1, col_u2 = st.columns(2)
                 with col_u1:
-                    u_jenis = st.text_input("Jenis", value=curr['jenis'])
-                    u_brand = st.text_input("Brand", value=curr['brand'])
-                    ukuran_ops = ["S", "M", "L", "XL"]
-                    idx_uk = ukuran_ops.index(curr['ukuran']) if curr['ukuran'] in ukuran_ops else 0
-                    u_ukuran = st.selectbox("Ukuran", ukuran_ops, index=idx_uk)
+                    jen_idx = ex_jenis.index(curr['jenis']) if curr['jenis'] in ex_jenis else 0
+                    sel_u_jenis = st.selectbox("Ubah Jenis", ex_jenis + [op_tbh], index=jen_idx)
+                    if sel_u_jenis == op_tbh:
+                        u_jenis = st.text_input("Ketik Jenis Baru", value=curr['jenis'])
+                    else:
+                        u_jenis = sel_u_jenis
+                        
+                    br_idx = ex_brand.index(curr['brand']) if curr['brand'] in ex_brand else 0
+                    sel_u_brand = st.selectbox("Ubah Brand", ex_brand + [op_tbh], index=br_idx)
+                    if sel_u_brand == op_tbh:
+                        u_brand = st.text_input("Ketik Brand Baru", value=curr['brand'])
+                    else:
+                        u_brand = sel_u_brand
+                    
+                    uk_idx = ex_ukuran.index(curr['ukuran']) if curr['ukuran'] in ex_ukuran else 0
+                    sel_u_ukuran = st.selectbox("Ubah Ukuran", ex_ukuran + [op_tbh], index=uk_idx)
+                    if sel_u_ukuran == op_tbh:
+                        u_ukuran = st.text_input("Ketik Ukuran Baru", value=curr['ukuran'])
+                    else:
+                        u_ukuran = sel_u_ukuran
+                    
                 with col_u2:
                     u_harga = st.number_input("Harga per item", value=int(curr['harga_per_item']), step=1000)
                     u_terjual = st.number_input("Jumlah Terjual (pcs)", value=int(curr['jumlah_terjual']), step=1)
                     u_stokawal = st.number_input("Stok Awal Asumsi", value=int(curr.get('stok_awal', 10)), step=1)
                 
-                submit_update = st.form_submit_button("Terapkan Spesifikasi")
+                st.markdown("<br>", unsafe_allow_html=True)
+                submit_update = st.button("Terapkan Spesifikasi", use_container_width=True)
                 if submit_update:
-                    if not u_jenis.strip() or not u_brand.strip():
-                        st.error("Jenis dan Brand tidak boleh kosong!")
+                    if not u_jenis.strip() or not u_brand.strip() or not u_ukuran.strip():
+                        st.error("Jenis, Brand dan Ukuran tidak boleh kosong!")
                     else:
                         hpp = u_harga * 0.6
                         profit_per_item = u_harga - hpp
                         total_profit = profit_per_item * u_terjual
                         
-                        # Timpa data index spesifik di list
                         data_produk[idx].update({
-                            "jenis": u_jenis,
-                            "brand": u_brand,
-                            "ukuran": u_ukuran,
+                            "jenis": str(u_jenis).strip(),
+                            "brand": str(u_brand).strip(),
+                            "ukuran": str(u_ukuran).strip(),
                             "harga_per_item": u_harga,
                             "stok_awal": u_stokawal,
                             "stok_akhir": u_stokawal - u_terjual,
@@ -291,7 +375,7 @@ with tab_crud:
                             "total_profit": total_profit
                         })
                         save_data(data_produk)
-                        st.success("Perubahan pada instansi data berhasil tersimpan!")
+                        st.session_state['swal_show'] = {"title": "Update Berhasil!", "text": "Perubahan pada data telah disinkronisasikan.", "icon": "info"}
                         st.rerun()
 
     # === OPERASI: DELETE ===
@@ -301,14 +385,16 @@ with tab_crud:
             st.info("Dataset JSON Anda masih kosong!")
         else:
             list_hapus = [f"[{i+1}] [{p['brand']}] Jenis: {p['jenis']} | Ukuran {p['ukuran']} | Terjual: {p['jumlah_terjual']}" for i, p in enumerate(data_produk)]
-            dipilih_hapus = st.selectbox("Pilih produk historis yang ingin dihapus:", list_hapus)
-            idx_del = list_hapus.index(dipilih_hapus)
+            dipilih_hapus = st.selectbox("Pilih produk historis yang ingin dihapus:", list_hapus, index=None, placeholder="-- Pilih Data Produk --")
             
-            st.warning(f"Apakah Anda setuju ingin menghapus data **[{data_produk[idx_del]['brand']}] {data_produk[idx_del]['jenis']}** secara permanen dari sistem?")
-            
-            if st.button("Ya, Hapus Terpilih", type="primary"):
-                nama_barang = data_produk[idx_del]['brand']
-                data_produk.pop(idx_del)
-                save_data(data_produk)
-                st.success(f"Logik data '{nama_barang}' telah dijauhkan dari master file (Hapus berhasil).")
-                st.rerun()
+            if dipilih_hapus:
+                idx_del = list_hapus.index(dipilih_hapus)
+                
+                st.warning(f"Apakah Anda setuju ingin menghapus data **[{data_produk[idx_del]['brand']}] {data_produk[idx_del]['jenis']}** secara permanen dari sistem?")
+                
+                if st.button("Ya, Hapus Terpilih", type="primary"):
+                    nama_barang = data_produk[idx_del]['brand']
+                    data_produk.pop(idx_del)
+                    save_data(data_produk)
+                    st.session_state['swal_show'] = {"title": "Terhapus", "text": f"Data '{nama_barang}' telah dienyahkan dari master.", "icon": "warning"}
+                    st.rerun()

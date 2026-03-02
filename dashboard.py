@@ -21,6 +21,46 @@ def load_data():
 def save_data(data):
     with open("output_produk.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+        
+    # 2. Update File Rekap Statistik agar nilai matrik ikut berubah di 'output_rekap.json'
+    try:
+        df_temp = pd.DataFrame(data)
+        if not df_temp.empty:
+            stats = {
+                "total_produk_entries": len(df_temp),
+                "total_profit": float(df_temp['total_profit'].sum()),
+                "rata_rata_profit": float(df_temp['total_profit'].sum() / len(df_temp)),
+                "profit_tertinggi": float(df_temp['total_profit'].max()),
+                "profit_terendah": float(df_temp['total_profit'].min()),
+                "total_unit_terjual": int(df_temp['jumlah_terjual'].sum())
+            }
+            rekap_jenis = df_temp.groupby('jenis')['total_profit'].sum().to_dict()
+            
+            payload = {
+                "meta": {
+                    "dibuat_pada": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "sumber": "Auto-update Web Dashboard"
+                },
+                "statistik": stats,
+                "rekap_per_jenis": rekap_jenis
+            }
+            with open("output_rekap.json", "w", encoding="utf-8") as f:
+                json.dump(payload, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        pass
+        
+    # 3. Otomatis PUSH file ke GitHub secara diam-diam di background (Localhost Only)
+    def push_to_git():
+        import subprocess
+        try:
+            subprocess.run(["git", "add", "output_produk.json", "output_rekap.json"], capture_output=True)
+            subprocess.run(["git", "commit", "-m", "Auto-update CRUD dari Web Dashboard"], capture_output=True)
+            subprocess.run(["git", "push"], capture_output=True)
+        except:
+            pass
+            
+    import threading
+    threading.Thread(target=push_to_git).start()
 
 # Baca data setiap kali halaman dirender
 data_produk = load_data()

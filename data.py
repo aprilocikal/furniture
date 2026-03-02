@@ -260,6 +260,18 @@ class JSONExporter:
             json.dump(payload, f, ensure_ascii=False, indent=2)
         print(f"[Rekap] --> {output_path}")
 
+        # Otomatis PUSH file sinkronisasi JSON ke Github tanpa output terminal (berjalan di background)
+        import threading
+        import subprocess
+        def push_to_git():
+            try:
+                subprocess.run(["git", "add", "output_produk.json", "output_rekap.json"], capture_output=True)
+                subprocess.run(["git", "commit", "-m", "Auto-update CRUD dari Terminal OOP"], capture_output=True)
+                subprocess.run(["git", "push"], capture_output=True)
+            except:
+                pass
+        threading.Thread(target=push_to_git).start()
+
 
 # =============================================
 # MAIN PROGRAM - Titik Masuk Aplikasi

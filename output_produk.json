@@ -1272,5 +1272,18 @@
     "hpp": 5400000.0,
     "profit_per_item": 3600000.0,
     "total_profit": 313200000.0
+  },
+  {
+    "jenis": "Kursi",
+    "ukuran": "L",
+    "harga_per_item": 2666,
+    "stok_awal": 10,
+    "stok_akhir": -3222,
+    "jumlah_terjual": 3232,
+    "tanggal_terjual": "2026-03-02",
+    "brand": "CabinetPro",
+    "hpp": 1599.6,
+    "profit_per_item": 1066.4,
+    "total_profit": 3446604.8000000003
   }
 ]

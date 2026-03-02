@@ -1,18 +1,18 @@
 {
   "meta": {
-    "dibuat_pada": "2026-03-02 11:59:28",
+    "dibuat_pada": "2026-03-02 11:59:39",
     "sumber": "Auto-update Web Dashboard"
   },
   "statistik": {
-    "total_produk_entries": 99,
-    "total_profit": 594123254.0,
-    "rata_rata_profit": 6001244.98989899,
+    "total_produk_entries": 100,
+    "total_profit": 597569858.8,
+    "rata_rata_profit": 5975698.5879999995,
     "profit_tertinggi": 313200000.0,
     "profit_terendah": 217039.2,
-    "total_unit_terjual": 8187
+    "total_unit_terjual": 11419
   },
   "rekap_per_jenis": {
-    "Kursi": 46610144.0,
+    "Kursi": 50056748.8,
     "Lemari": 34670728.8,
     "Meja": 28044247.2,
     "Rak": 63178011.0,

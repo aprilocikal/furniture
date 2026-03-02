@@ -1,14 +1,14 @@
 {
   "meta": {
-    "dibuat_pada": "2026-03-02 11:59:39",
+    "dibuat_pada": "2026-03-02 12:01:50",
     "sumber": "Auto-update Web Dashboard"
   },
   "statistik": {
-    "total_produk_entries": 100,
+    "total_produk_entries": 101,
     "total_profit": 597569858.8,
-    "rata_rata_profit": 5975698.5879999995,
+    "rata_rata_profit": 5916533.255445544,
     "profit_tertinggi": 313200000.0,
-    "profit_terendah": 217039.2,
+    "profit_terendah": 0.0,
     "total_unit_terjual": 11419
   },
   "rekap_per_jenis": {

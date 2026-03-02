@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "dibuat_pada": "2026-03-02 10:46:00",
+    "sumber": "isas 1 smster 2.xlsx"
+  },
+  "statistik": {
+    "total_produk_entries": 97,
+    "total_profit": 276797448.6,
+    "rata_rata_profit": 2853581.94,
+    "profit_tertinggi": 9881211.6,
+    "profit_terendah": 217039.2,
+    "total_unit_terjual": 4868
+  },
+  "rekap_per_jenis": {
+    "Sofa": 78359958.0,
+    "Rak": 63178011.00000001,
+    "Kursi": 42484338.599999994,
+    "Lemari": 34670728.800000004,
+    "Tempat Tidur": 30060165.0,
+    "Meja": 28044247.2
+  }
+}

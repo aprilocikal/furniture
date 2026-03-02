@@ -1259,5 +1259,18 @@
     "hpp": 72346.4,
     "profit_per_item": 31005.6,
     "total_profit": 620112.0
+  },
+  {
+    "jenis": "Sofa",
+    "ukuran": "S",
+    "harga_per_item": 9000000,
+    "stok_awal": 10,
+    "stok_akhir": -77,
+    "jumlah_terjual": 87,
+    "tanggal_terjual": "2026-03-02",
+    "brand": "HoldMax",
+    "hpp": 5400000.0,
+    "profit_per_item": 3600000.0,
+    "total_profit": 313200000.0
   }
 ]

@@ -166,8 +166,8 @@ with tab_crud:
         with st.form("form_tambah"):
             col_t1, col_t2 = st.columns(2)
             with col_t1:
-                t_jenis = st.text_input("Jenis (mis. Meja)")
-                t_brand = st.text_input("Brand (mis. IKEA)")
+                t_jenis = st.text_input("Jenis", placeholder="Contoh: Meja, Kursi")
+                t_brand = st.text_input("Brand", placeholder="Contoh: IKEA, Informa")
                 t_ukuran = st.selectbox("Ukuran", ["S", "M", "L", "XL"])
             with col_t2:
                 t_harga = st.number_input("Harga per item", min_value=0, step=1000)

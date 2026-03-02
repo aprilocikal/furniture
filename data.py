@@ -359,8 +359,8 @@ if __name__ == "__main__":
                 
         elif pilihan == '2':
             print("\n--- TAMBAH PRODUK ---")
-            jenis = input("Jenis (mis. Meja): ")
-            brand = input("Brand (mis. IKEA): ")
+            jenis = input("Jenis (contoh: Meja): ")
+            brand = input("Brand (contoh: IKEA): ")
             ukuran = input("Ukuran (S/M/L/XL): ")
             try:
                 harga = int(input("Harga per item: "))

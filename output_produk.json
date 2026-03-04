@@ -1311,18 +1311,5 @@
     "hpp": 0.0,
     "profit_per_item": 0.0,
     "total_profit": 0.0
-  },
-  {
-    "jenis": "Meja",
-    "ukuran": "S",
-    "harga_per_item": 60000,
-    "stok_awal": 23,
-    "stok_akhir": -67,
-    "jumlah_terjual": 90,
-    "tanggal_terjual": "2026-03-04",
-    "brand": "DreamRest",
-    "hpp": 36000.0,
-    "profit_per_item": 24000.0,
-    "total_profit": 2160000.0
   }
 ]

@@ -1,20 +1,20 @@
 {
   "meta": {
-    "dibuat_pada": "2026-03-02 12:01:50",
+    "dibuat_pada": "2026-03-04 09:11:04",
     "sumber": "Auto-update Web Dashboard"
   },
   "statistik": {
-    "total_produk_entries": 101,
-    "total_profit": 597569858.8,
-    "rata_rata_profit": 5916533.255445544,
+    "total_produk_entries": 102,
+    "total_profit": 598073858.8,
+    "rata_rata_profit": 5863469.203921569,
     "profit_tertinggi": 313200000.0,
     "profit_terendah": 0.0,
-    "total_unit_terjual": 11419
+    "total_unit_terjual": 11440
   },
   "rekap_per_jenis": {
     "Kursi": 50056748.8,
     "Lemari": 34670728.8,
-    "Meja": 28044247.2,
+    "Meja": 28548247.2,
     "Rak": 63178011.0,
     "Sofa": 391559958.0,
     "Tempat Tidur": 30060165.0
